@@ -1,0 +1,31 @@
+# ===========================
+# C++ / CMake
+# ===========================
+cpp_monitor/build/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+*.o
+*.obj
+*.exe
+*.out
+monitor
+
+# ===========================
+# Python
+# ===========================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+venv/
+.env/
+
+# ===========================
+# IDE / Editor
+# ===========================
+.vscode/
+.idea/
+*.iml
