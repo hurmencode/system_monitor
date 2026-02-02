@@ -43,29 +43,6 @@ system-monitor/
 └── README.md
 ```
 
-
----
-
-## ⚙️ Сборка и запуск
-
-### C++
-```
-bash
-
-mkdir build
-cd build
-cmake ..
-make
-```
-
-### Python
-
-```
-bash
-
-python3 python_client/main.py
-```
-
 ---
 
 ## 🛠 Используемые технологии
