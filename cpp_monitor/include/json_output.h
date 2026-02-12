@@ -8,3 +8,10 @@ std::string BuildJsonOutput(
     long long ram_total,
     double uptime
 );
+
+std::string BuildHumanOutput(
+    double cpu, 
+    long long ram_used, 
+    long long ram_total, 
+    double uptime
+);
