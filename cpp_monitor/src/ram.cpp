@@ -27,7 +27,7 @@ RamInfo GetRamInfo() {
     while(std::getline(file, line)) {
         if (line.rfind("MemTotal:", 0) == 0) {
             info.total_kb = ExtractValueKb(line);
-        } else if (line.rfind("MemAvailable:")) {
+        } else if (line.rfind("MemAvailable:", 0) == 0) {
             info.available_kb = ExtractValueKb(line);
         }
 

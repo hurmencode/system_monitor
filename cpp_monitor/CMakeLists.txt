@@ -9,6 +9,7 @@ add_executable(monitor
     src/main.cpp
     src/ram.cpp
     src/uptime.cpp
+    src/pocesses.cpp
 )
 
 target_include_directories(monitor PRIVATE include)
