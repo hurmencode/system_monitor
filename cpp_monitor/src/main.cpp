@@ -1,4 +1,5 @@
 #include <chrono>
+#include <iomanip>
 #include <iostream>
 #include <thread>
 
@@ -11,11 +12,7 @@
 int main(int argc, char* argv[]) {
     int watch_interval = 0;
 
-    GetCpuUsage();
-
-    //auto pids = GetPids();
-
-    //std::cout << "Processes: " << pids.size() << std::endl;
+    //GetCpuUsage();
 
     bool use_json = true;
     for(int i = 1; i < argc; ++i){
@@ -40,16 +37,23 @@ int main(int argc, char* argv[]) {
         auto ram_total = ram.total_kb / 1024;
 
         if (!use_json && watch_interval > 0) {
-            std::cout << "=== REFRESH ===" << std::endl;
-            std::cout << "\033[2J\033[H";
-            //std::cerr << "Watch mode is not supported with JSON output\n";
-            //return 1;
+            std::cout << "\033[2J\033[H\n";
         }
 
         if (use_json) {
             std::cout << BuildJsonOutput(cpu, ram_used, ram_total, uptime) << std::endl;
         } else {
-            std::cout << BuildHumanOutput(cpu, ram_used, ram_total, uptime) << std::endl;
+            std::cout << BuildHumanOutput(cpu, ram_used, ram_total, uptime);
+
+            auto pids = GetPids();
+            std::cout << "Processes: " << pids.size() << std::endl;
+
+            for (size_t i = 0; i < std::min<size_t>(pids.size(), 5); ++i) {
+                int pid = pids[i];
+                std::string name = GetProcessName(pid);
+
+                std::cout <<std::setw(6) << pid << " " << name << std::endl;
+            }
         }
 
         if (watch_interval > 0 ){

@@ -42,18 +42,29 @@ static long long GetIdle(const std::vector<long long>& times) {
 }
 
 double GetCpuUsage() {
-    auto times_1 = ReadCpuTimes();
-    auto total_1 = GetTotal(times_1);
-    auto idle_1 = GetIdle(times_1);
-
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+    static long long prev_total = 0;
+    static long long prev_idle = 0;
+    static bool first = true;;
 
     auto times_2 = ReadCpuTimes();
     auto total_2 = GetTotal(times_2);
     auto idle_2 = GetIdle(times_2);
 
-    auto total_delta = total_2 - total_1;
-    auto idle_delta = idle_2 - idle_1;
+    if (first) {
+        prev_total = total_2;
+        prev_idle = idle_2;
+        first = false;
+        return 0.0;
+    }
+    auto total_delta = total_2 - prev_total;
+    auto idle_delta = idle_2 - prev_idle;
+
+    prev_total = total_2;
+    prev_idle =idle_2;
+
+    if (total_delta == 0) {
+        return 0.0;
+    }
 
     return (1.0 - (double)idle_delta / total_delta) * 100.0;
 }
