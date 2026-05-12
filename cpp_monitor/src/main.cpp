@@ -45,14 +45,26 @@ int main(int argc, char* argv[]) {
         } else {
             std::cout << BuildHumanOutput(cpu, ram_used, ram_total, uptime);
 
-            auto pids = GetPids();
-            std::cout << "Processes: " << pids.size() << std::endl;
+            auto processes = GetProcesses();
+            std::cout << "\nProcesses: " 
+                      << processes.size() 
+                      << "\n\n";
 
-            for (size_t i = 0; i < std::min<size_t>(pids.size(), 5); ++i) {
-                int pid = pids[i];
-                std::string name = GetProcessName(pid);
+            std::cout << std::left 
+                      << std::setw(10) 
+                      << "PID" << "NAME" 
+                      << std::endl;
 
-                std::cout <<std::setw(6) << pid << " " << name << std::endl;
+            std::cout << std::string(30, '-') << std::endl;
+
+            for (size_t i = 0; i < std::min<size_t>(processes.size(), 5); ++i) {
+                const auto& proc = processes[i];
+
+                std::cout << std::left
+                          << std::setw(10)
+                          << proc.pid
+                          << proc.name
+                          << std::endl;
             }
         }
 

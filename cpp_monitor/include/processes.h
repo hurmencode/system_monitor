@@ -3,5 +3,11 @@
 #include <string>
 #include <vector>
 
-std::vector<int> GetPids();
+struct ProcessInfo {
+    int pid;
+    std::string name;
+};
+
+
 std::string GetProcessName(int pid);
+std::vector<ProcessInfo> GetProcesses();
