@@ -6,8 +6,11 @@
 struct ProcessInfo {
     int pid;
     std::string name;
+    long long cpu_time;
+    double cpu_percent;
 };
 
 
 std::string GetProcessName(int pid);
 std::vector<ProcessInfo> GetProcesses();
+long long GetProcessCpuTime(int pid);

@@ -4,7 +4,10 @@
 #include <filesystem>
 #include <fstream>
 #include <string>
+#include <unordered_map>
 #include <vector>
+
+static std::unordered_map<int, long long> previous_cpu_times;
 
 std::string GetProcessName (int pid) {
     std::string path = "/proc/" + std::to_string(pid) + "/comm";
@@ -42,14 +45,60 @@ std::vector<ProcessInfo> GetProcesses() {
         ProcessInfo proc;
         proc.pid = pid;
         proc.name = GetProcessName(pid);
+        proc.cpu_time = GetProcessCpuTime(pid);
+
+        if (previous_cpu_times.find(pid) != previous_cpu_times.end()) {
+            long long prev = previous_cpu_times[pid];
+
+            long long delta = proc.cpu_time - prev;
+
+            proc.cpu_percent = delta / 100.0;
+        } else {
+            proc.cpu_percent = 0.0;
+        }
+        
+        previous_cpu_times[pid] = proc.cpu_time;
 
         processes.push_back(proc);
     }
 
     std::sort(processes.begin(), processes.end(),
     [](const ProcessInfo& a, const ProcessInfo& b){
-        return a.pid > b.pid;
+        return a.cpu_percent > b.cpu_percent;
     });
 
     return processes;
+}
+
+long long GetProcessCpuTime (int pid) {
+    std::string path = "/proc/" + std::to_string(pid) + "/stat";
+
+    std::ifstream file(path);
+
+    if(!file.is_open()){
+        return 0;
+    }
+
+    std::string line;
+    std::getline(file, line);
+
+    std::istringstream iss(line);
+
+    std::string value;
+    long long utime = 0;
+    long long stime = 0;
+
+    for (int i = 1; i <= 15; ++i) {
+        iss >> value;
+
+        if (i == 14) {
+            utime = std::stoll(value);
+        }
+
+        if (i == 15) {
+            stime = std::stoll(value);
+        }
+    }
+
+    return utime + stime;
 }

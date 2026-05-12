@@ -51,8 +51,9 @@ int main(int argc, char* argv[]) {
                       << "\n\n";
 
             std::cout << std::left 
-                      << std::setw(10) 
-                      << "PID" << "NAME" 
+                      << std::setw(10) << "PID" 
+                      << std::setw(12) << "CPU%"
+                      << "NAME" 
                       << std::endl;
 
             std::cout << std::string(30, '-') << std::endl;
@@ -61,8 +62,9 @@ int main(int argc, char* argv[]) {
                 const auto& proc = processes[i];
 
                 std::cout << std::left
-                          << std::setw(10)
-                          << proc.pid
+                          << std::setw(10) << proc.pid
+                          << std::setw(12) << std::fixed << std::setprecision(2)
+                          << proc.cpu_percent
                           << proc.name
                           << std::endl;
             }
