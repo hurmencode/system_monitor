@@ -11,6 +11,7 @@
 
 int main(int argc, char* argv[]) {
     int watch_interval = 0;
+    SortMode sort_mode = SortMode::Cpu;
 
     //GetCpuUsage();
 
@@ -24,6 +25,18 @@ int main(int argc, char* argv[]) {
             use_json = true;
         } else if (arg == "--watch" && i + 1 < argc) {
             watch_interval = std::stoi(argv[i + 1]);
+            i++;
+        } else if (arg == "--sort" && i + 1 < argc) {
+            std::string value = argv[i + 1];
+
+            if (value == "cpu") {
+                sort_mode = SortMode::Cpu;
+            } else if (value == "ram") {
+                sort_mode = SortMode::Ram;
+            } else if (value == "pid") {
+                sort_mode = SortMode::Pid;
+            }
+
             i++;
         }
     }
@@ -45,7 +58,7 @@ int main(int argc, char* argv[]) {
         } else {
             std::cout << BuildHumanOutput(cpu, ram_used, ram_total, uptime);
 
-            auto processes = GetProcesses();
+            auto processes = GetProcesses(sort_mode);
             std::cout << "\nProcesses: " 
                       << processes.size() 
                       << "\n\n";

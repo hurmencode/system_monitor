@@ -23,7 +23,7 @@ std::string GetProcessName (int pid) {
     return name;
 }
 
-std::vector<ProcessInfo> GetProcesses() {
+std::vector<ProcessInfo> GetProcesses(SortMode sort_mode) {
     std::vector<ProcessInfo> processes;
 
     for (const auto& entry : std::filesystem::directory_iterator("/proc")) {
@@ -63,10 +63,31 @@ std::vector<ProcessInfo> GetProcesses() {
         processes.push_back(proc);
     }
 
-    std::sort(processes.begin(), processes.end(),
-    [](const ProcessInfo& a, const ProcessInfo& b){
-        return a.cpu_percent > b.cpu_percent;
-    });
+    switch (sort_mode) {
+        case SortMode::Cpu:
+            std::sort(processes.begin(), processes.end(),
+            [](const ProcessInfo& a, const ProcessInfo& b){
+                return a.cpu_percent > b.cpu_percent;
+            });
+
+            break;
+
+        case SortMode::Ram:
+            std::sort(processes.begin(), processes.end(),
+            [](const ProcessInfo& a, const ProcessInfo& b){
+                return a.ram_kb > b.ram_kb;
+            });
+
+            break;
+
+        case SortMode::Pid:
+            std::sort(processes.begin(), processes.end(),
+            [](const ProcessInfo& a, const ProcessInfo& b){
+                return a.pid > b.pid;
+            });
+
+            break;
+    }
 
     return processes;
 }

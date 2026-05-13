@@ -3,6 +3,12 @@
 #include <string>
 #include <vector>
 
+enum class SortMode {
+    Cpu,
+    Ram,
+    Pid
+};
+
 struct ProcessInfo {
     int pid;
     std::string name;
@@ -13,6 +19,6 @@ struct ProcessInfo {
 
 
 std::string GetProcessName(int pid);
-std::vector<ProcessInfo> GetProcesses();
+std::vector<ProcessInfo> GetProcesses(SortMode sort_mode);
 long long GetProcessCpuTime(int pid);
 long long GetProcessRamKb (int pid);
