@@ -30,8 +30,10 @@ system-monitor/
 ├── cpp_monitor/
 │ ├── src/
 │ │ ├── cpu.cpp
-│ │ ├── memory.cpp
+│ │ ├── json_output.cpp
 │ │ ├── processes.cpp
+│ │ ├── ram.cpp
+│ │ ├── uptime.cpp
 │ │ └── main.cpp
 │ ├── include/
 │ └── CMakeLists.txt
