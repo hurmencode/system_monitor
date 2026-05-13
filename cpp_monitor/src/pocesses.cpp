@@ -46,6 +46,7 @@ std::vector<ProcessInfo> GetProcesses() {
         proc.pid = pid;
         proc.name = GetProcessName(pid);
         proc.cpu_time = GetProcessCpuTime(pid);
+        proc.ram_kb = GetProcessRamKb(pid);
 
         if (previous_cpu_times.find(pid) != previous_cpu_times.end()) {
             long long prev = previous_cpu_times[pid];
@@ -101,4 +102,32 @@ long long GetProcessCpuTime (int pid) {
     }
 
     return utime + stime;
+}
+
+long long GetProcessRamKb (int pid) {
+    std::string path = "/proc/" + std::to_string(pid) + "/status";
+
+    std::ifstream file(path);
+
+    if (!file.is_open()){
+        return 0;
+    }
+
+    std::string line;
+
+    while (std::getline(file, line)) {
+        if (line.rfind("VmRSS:", 0) == 0) {
+            std::istringstream iss(line);
+
+            std::string key;
+            long long value;
+            std::string unit;
+
+            iss >> key >> value >> unit;
+
+            return value;
+        }
+    }
+
+    return 0;
 }

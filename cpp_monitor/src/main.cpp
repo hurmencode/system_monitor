@@ -53,10 +53,11 @@ int main(int argc, char* argv[]) {
             std::cout << std::left 
                       << std::setw(10) << "PID" 
                       << std::setw(12) << "CPU%"
+                      << std::setw(14) << "RAM (MB)"
                       << "NAME" 
                       << std::endl;
 
-            std::cout << std::string(30, '-') << std::endl;
+            std::cout << std::string(50, '-') << std::endl;
 
             for (size_t i = 0; i < std::min<size_t>(processes.size(), 5); ++i) {
                 const auto& proc = processes[i];
@@ -65,6 +66,8 @@ int main(int argc, char* argv[]) {
                           << std::setw(10) << proc.pid
                           << std::setw(12) << std::fixed << std::setprecision(2)
                           << proc.cpu_percent
+                          << std::setw(14) << std::fixed << std::setprecision(2)
+                          << static_cast<double>(proc.ram_kb) / 1024
                           << proc.name
                           << std::endl;
             }
