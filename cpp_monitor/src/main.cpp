@@ -9,6 +9,17 @@
 #include "ram.h"
 #include "uptime.h"
 
+void PrintUsage() {
+    std::cout << "Usage:\n";
+    std::cout << "  ./monitor [options]\n\n";
+
+    std::cout << "Options:\n";
+    std::cout << "  --human               Human-readable output\n";
+    std::cout << "  --json                JSON output\n";
+    std::cout << "  --watch N             Refresh every N seconds\n";
+    std::cout << "  --sort cpu|ram|pid    Sort processes\n";
+}
+
 int main(int argc, char* argv[]) {
     int watch_interval = 0;
     SortMode sort_mode = SortMode::Cpu;
@@ -24,7 +35,14 @@ int main(int argc, char* argv[]) {
         } else if(arg == "--json") {
             use_json = true;
         } else if (arg == "--watch" && i + 1 < argc) {
-            watch_interval = std::stoi(argv[i + 1]);
+            try {
+                watch_interval = std::stoi(argv[i + 1]);
+            } catch (...) {
+                std::cerr << "Ivalid watch interval" << std::endl;
+
+                PrintUsage();
+                return 1;
+            }
             i++;
         } else if (arg == "--sort" && i + 1 < argc) {
             std::string value = argv[i + 1];
@@ -35,9 +53,22 @@ int main(int argc, char* argv[]) {
                 sort_mode = SortMode::Ram;
             } else if (value == "pid") {
                 sort_mode = SortMode::Pid;
+            } else {
+                std::cerr << "Ivalid sort mode: " << value << std::endl;
+
+                PrintUsage();
+                return 1;
             }
 
             i++;
+        }else if (arg == "--help") {
+            PrintUsage();
+            return 0;
+        } else {
+            std::cerr << "Unknown comand: " << arg << std::endl;
+
+            PrintUsage();
+            return 1;
         }
     }
 
@@ -63,6 +94,24 @@ int main(int argc, char* argv[]) {
                       << processes.size() 
                       << "\n\n";
 
+            std::cout << "Sort mode: ";
+
+            switch (sort_mode) {
+                case SortMode::Cpu:
+                    std::cout << "CPU";
+                    break;
+
+                case SortMode::Ram:
+                    std::cout << "RAM";
+                    break;
+                    
+                case SortMode::Pid:
+                    std::cout << "PID";
+                    break;
+            }
+
+            std::cout << std::endl;
+
             std::cout << std::left 
                       << std::setw(10) << "PID" 
                       << std::setw(12) << "CPU%"
@@ -77,8 +126,10 @@ int main(int argc, char* argv[]) {
 
                 std::cout << std::left
                           << std::setw(10) << proc.pid
+                          << GetCpuColor(proc.cpu_percent)
                           << std::setw(12) << std::fixed << std::setprecision(2)
                           << proc.cpu_percent
+                          << "\033[0m"
                           << std::setw(14) << std::fixed << std::setprecision(2)
                           << static_cast<double>(proc.ram_kb) / 1024
                           << proc.name

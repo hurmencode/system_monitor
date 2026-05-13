@@ -152,3 +152,15 @@ long long GetProcessRamKb (int pid) {
 
     return 0;
 }
+
+std::string GetCpuColor (double cpu_percent) {
+    if (cpu_percent > 50.0) {
+        return "\033[31m";
+    }
+
+    if (cpu_percent > 10.0) {
+        return "\033[33m";
+    }
+    
+    return "\033[32m";
+}

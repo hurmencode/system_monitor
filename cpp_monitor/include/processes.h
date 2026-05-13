@@ -22,3 +22,4 @@ std::string GetProcessName(int pid);
 std::vector<ProcessInfo> GetProcesses(SortMode sort_mode);
 long long GetProcessCpuTime(int pid);
 long long GetProcessRamKb (int pid);
+std::string GetCpuColor (double cpu_percent);
