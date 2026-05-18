@@ -1,4 +1,5 @@
 #include <chrono>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <thread>
@@ -19,11 +20,13 @@ void PrintUsage() {
     std::cout << "  --watch N             Refresh every N seconds\n";
     std::cout << "  --sort cpu|ram|pid    Sort processes\n";
     std::cout << "  --top N               Show top N processes\n";
+    std::cout << "  --log FILE            Write output to file\n";
 }
 
 int main(int argc, char* argv[]) {
     int watch_interval = 0;
     int top_count = 10;
+    std::string log_file;
     SortMode sort_mode = SortMode::Cpu;
 
     //GetCpuUsage();
@@ -81,10 +84,24 @@ int main(int argc, char* argv[]) {
             }
 
             i++;
-        } else {
+        } else if (arg == "--log" && i + 1 < argc) {
+            log_file = argv[i + 1];
+            i++;
+        }else {
             std::cerr << "Unknown comand: " << arg << std::endl;
 
             PrintUsage();
+            return 1;
+        }
+    }
+
+    std::ofstream log_stream;
+
+    if (!log_file.empty()) {
+        log_stream.open(log_file, std::ios::app);
+
+        if (!log_stream.is_open()) {
+            std::cerr << "Failed to open log file" << std::endl;
             return 1;
         }
     }
@@ -101,10 +118,14 @@ int main(int argc, char* argv[]) {
             std::cout << "\033[2J\033[H\n";
         }
 
+        std::string output;
+
         if (use_json) {
-            std::cout << BuildJsonOutput(cpu, ram_used, ram_total, uptime) << std::endl;
+            output = BuildJsonOutput(cpu, ram_used, ram_total, uptime);
+            std::cout << output << std::endl;
         } else {
-            std::cout << BuildHumanOutput(cpu, ram_used, ram_total, uptime);
+            output = BuildHumanOutput(cpu, ram_used, ram_total, uptime);
+            std::cout << output;
 
             auto processes = GetProcesses(sort_mode);
             std::cout << "\nTop processes: " 
@@ -152,6 +173,10 @@ int main(int argc, char* argv[]) {
                           << proc.name
                           << std::endl;
             }
+        }
+
+        if (log_stream.is_open()) {
+            log_stream << output << std::endl;
         }
 
         if (watch_interval > 0 ){
