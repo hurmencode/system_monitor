@@ -18,10 +18,12 @@ void PrintUsage() {
     std::cout << "  --json                JSON output\n";
     std::cout << "  --watch N             Refresh every N seconds\n";
     std::cout << "  --sort cpu|ram|pid    Sort processes\n";
+    std::cout << "  --top N               Show top N processes\n";
 }
 
 int main(int argc, char* argv[]) {
     int watch_interval = 0;
+    int top_count = 10;
     SortMode sort_mode = SortMode::Cpu;
 
     //GetCpuUsage();
@@ -64,6 +66,21 @@ int main(int argc, char* argv[]) {
         }else if (arg == "--help") {
             PrintUsage();
             return 0;
+        } else if (arg == "--top" && i + 1 < argc) {
+            try {
+                top_count = std::stoi(argv[i +1]);
+
+                if(top_count <= 0){
+                    throw std::invalid_argument("negative");
+                }
+            } catch (...) {
+                std::cerr << "Invalid top count" << std::endl;
+
+                PrintUsage();
+                return 1;
+            }
+
+            i++;
         } else {
             std::cerr << "Unknown comand: " << arg << std::endl;
 
@@ -90,9 +107,9 @@ int main(int argc, char* argv[]) {
             std::cout << BuildHumanOutput(cpu, ram_used, ram_total, uptime);
 
             auto processes = GetProcesses(sort_mode);
-            std::cout << "\nProcesses: " 
-                      << processes.size() 
-                      << "\n\n";
+            std::cout << "\nTop processes: " 
+                      << top_count 
+                      << std::endl;
 
             std::cout << "Sort mode: ";
 
@@ -121,7 +138,7 @@ int main(int argc, char* argv[]) {
 
             std::cout << std::string(50, '-') << std::endl;
 
-            for (size_t i = 0; i < std::min<size_t>(processes.size(), 5); ++i) {
+            for (size_t i = 0; i < std::min<size_t>(processes.size(), top_count); ++i) {
                 const auto& proc = processes[i];
 
                 std::cout << std::left
